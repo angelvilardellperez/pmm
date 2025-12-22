@@ -308,6 +308,10 @@ func runGRPCServer(ctx context.Context, deps *gRPCServerDeps) {
 	// Start RTA store cleanup goroutine
 	go rtaStore.Run(ctx)
 
+	// Start mock generator for testing (TODO: remove in production or make configurable)
+	mockGen := realtimeanalytics.NewMockGenerator(rtaStore, deps.db)
+	go mockGen.Run(ctx)
+
 	// run server until it is stopped gracefully or not
 	listener, err := net.Listen("tcp", gRPCAddr)
 	if err != nil {
