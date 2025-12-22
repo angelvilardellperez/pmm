@@ -48,6 +48,41 @@ message ChangeRealtimeAnalyticsResponse {
   // Empty response for now.
 }
 
+// QueryDataItem represents a single query in real-time analytics data.
+message QueryDataItem {
+  // Unique query identifier.
+  string query_id = 1;
+  // Service identifier.
+  string service_id = 2;
+  // Service name.
+  string service_name = 3;
+  // Cluster name.
+  string cluster = 4;
+  // Database namespace (database.collection).
+  string namespace = 5;
+  // Raw query JSON.
+  string query = 6;
+  // Query fingerprint.
+  string fingerprint = 7;
+  // Query duration in milliseconds.
+  double duration = 8;
+  // Timestamp when the query was captured.
+  google.protobuf.Timestamp timestamp = 9;
+}
+
+// GetRealtimeQueryDataRequest contains filters for fetching real-time query data.
+message GetRealtimeQueryDataRequest {
+  // List of service IDs to filter by (OR logic).
+  // Required - at least one service ID must be provided.
+  repeated string service_ids = 1 [(validate.rules).repeated = {min_items: 1}];
+}
+
+// GetRealtimeQueryDataResponse returns real-time query data.
+message GetRealtimeQueryDataResponse {
+  // List of query data items.
+  repeated QueryDataItem queries = 1;
+}
+
 // RealtimeAnalyticsService provides public API for managing Real-Time Analytics.
 service RealtimeAnalyticsService {
   // ListRunningRealtimeAgents returns the list of currently running RTA agents.
@@ -68,6 +103,15 @@ service RealtimeAnalyticsService {
     option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
       summary: "Change Real-Time Analytics Configuration"
       description: "Enables or disables Real-Time Analytics for a specific service."
+    };
+  }
+
+  // GetRealtimeQueryData returns real-time query data from the in-memory store.
+  rpc GetRealtimeQueryData(GetRealtimeQueryDataRequest) returns (GetRealtimeQueryDataResponse) {
+    option (google.api.http) = {get: "/v1/realtime/query-data"};
+    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+      summary: "Get Real-Time Query Data"
+      description: "Returns real-time query data from the in-memory store. Supports filtering by service IDs. Designed for short polling from the UI."
     };
   }
 }

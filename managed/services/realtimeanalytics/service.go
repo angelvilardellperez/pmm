@@ -157,3 +157,34 @@ func (s *Service) ChangeRealtimeAnalytics(_ context.Context, req *rtav1.ChangeRe
 
 	return &rtav1.ChangeRealtimeAnalyticsResponse{}, nil
 }
+
+// GetRealtimeQueryData returns real-time query data from the in-memory store (gRPC handler).
+func (s *Service) GetRealtimeQueryData(_ context.Context, req *rtav1.GetRealtimeQueryDataRequest) (*rtav1.GetRealtimeQueryDataResponse, error) {
+	// Fetch data from store for each service ID
+	var allQueries []*QueryData
+	for _, serviceID := range req.ServiceIds {
+		queries := s.store.Get(serviceID, "" /* no cluster filter */)
+		allQueries = append(allQueries, queries...)
+	}
+
+	// Convert to protobuf response
+	response := &rtav1.GetRealtimeQueryDataResponse{
+		Queries: make([]*rtav1.QueryDataItem, 0, len(allQueries)),
+	}
+
+	for _, q := range allQueries {
+		response.Queries = append(response.Queries, &rtav1.QueryDataItem{
+			QueryId:     q.QueryID,
+			ServiceId:   q.ServiceID,
+			ServiceName: q.ServiceName,
+			Cluster:     q.Cluster,
+			Namespace:   q.Namespace,
+			Query:       q.Query,
+			Fingerprint: q.Fingerprint,
+			Duration:    q.Duration,
+			Timestamp:   timestamppb.New(q.Timestamp),
+		})
+	}
+
+	return response, nil
+}

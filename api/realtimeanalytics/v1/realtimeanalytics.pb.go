@@ -294,6 +294,217 @@ func (*ChangeRealtimeAnalyticsResponse) Descriptor() ([]byte, []int) {
 	return file_realtimeanalytics_v1_realtimeanalytics_proto_rawDescGZIP(), []int{4}
 }
 
+// QueryDataItem represents a single query in real-time analytics data.
+type QueryDataItem struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Unique query identifier.
+	QueryId string `protobuf:"bytes,1,opt,name=query_id,json=queryId,proto3" json:"query_id,omitempty"`
+	// Service identifier.
+	ServiceId string `protobuf:"bytes,2,opt,name=service_id,json=serviceId,proto3" json:"service_id,omitempty"`
+	// Service name.
+	ServiceName string `protobuf:"bytes,3,opt,name=service_name,json=serviceName,proto3" json:"service_name,omitempty"`
+	// Cluster name.
+	Cluster string `protobuf:"bytes,4,opt,name=cluster,proto3" json:"cluster,omitempty"`
+	// Database namespace (database.collection).
+	Namespace string `protobuf:"bytes,5,opt,name=namespace,proto3" json:"namespace,omitempty"`
+	// Raw query JSON.
+	Query string `protobuf:"bytes,6,opt,name=query,proto3" json:"query,omitempty"`
+	// Query fingerprint.
+	Fingerprint string `protobuf:"bytes,7,opt,name=fingerprint,proto3" json:"fingerprint,omitempty"`
+	// Query duration in milliseconds.
+	Duration float64 `protobuf:"fixed64,8,opt,name=duration,proto3" json:"duration,omitempty"`
+	// Timestamp when the query was captured.
+	Timestamp     *timestamppb.Timestamp `protobuf:"bytes,9,opt,name=timestamp,proto3" json:"timestamp,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *QueryDataItem) Reset() {
+	*x = QueryDataItem{}
+	mi := &file_realtimeanalytics_v1_realtimeanalytics_proto_msgTypes[5]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *QueryDataItem) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*QueryDataItem) ProtoMessage() {}
+
+func (x *QueryDataItem) ProtoReflect() protoreflect.Message {
+	mi := &file_realtimeanalytics_v1_realtimeanalytics_proto_msgTypes[5]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use QueryDataItem.ProtoReflect.Descriptor instead.
+func (*QueryDataItem) Descriptor() ([]byte, []int) {
+	return file_realtimeanalytics_v1_realtimeanalytics_proto_rawDescGZIP(), []int{5}
+}
+
+func (x *QueryDataItem) GetQueryId() string {
+	if x != nil {
+		return x.QueryId
+	}
+	return ""
+}
+
+func (x *QueryDataItem) GetServiceId() string {
+	if x != nil {
+		return x.ServiceId
+	}
+	return ""
+}
+
+func (x *QueryDataItem) GetServiceName() string {
+	if x != nil {
+		return x.ServiceName
+	}
+	return ""
+}
+
+func (x *QueryDataItem) GetCluster() string {
+	if x != nil {
+		return x.Cluster
+	}
+	return ""
+}
+
+func (x *QueryDataItem) GetNamespace() string {
+	if x != nil {
+		return x.Namespace
+	}
+	return ""
+}
+
+func (x *QueryDataItem) GetQuery() string {
+	if x != nil {
+		return x.Query
+	}
+	return ""
+}
+
+func (x *QueryDataItem) GetFingerprint() string {
+	if x != nil {
+		return x.Fingerprint
+	}
+	return ""
+}
+
+func (x *QueryDataItem) GetDuration() float64 {
+	if x != nil {
+		return x.Duration
+	}
+	return 0
+}
+
+func (x *QueryDataItem) GetTimestamp() *timestamppb.Timestamp {
+	if x != nil {
+		return x.Timestamp
+	}
+	return nil
+}
+
+// GetRealtimeQueryDataRequest contains filters for fetching real-time query data.
+type GetRealtimeQueryDataRequest struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Optional list of service IDs to filter by (OR logic).
+	// If empty, returns data for all services.
+	ServiceIds    []string `protobuf:"bytes,1,rep,name=service_ids,json=serviceIds,proto3" json:"service_ids,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *GetRealtimeQueryDataRequest) Reset() {
+	*x = GetRealtimeQueryDataRequest{}
+	mi := &file_realtimeanalytics_v1_realtimeanalytics_proto_msgTypes[6]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GetRealtimeQueryDataRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetRealtimeQueryDataRequest) ProtoMessage() {}
+
+func (x *GetRealtimeQueryDataRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_realtimeanalytics_v1_realtimeanalytics_proto_msgTypes[6]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetRealtimeQueryDataRequest.ProtoReflect.Descriptor instead.
+func (*GetRealtimeQueryDataRequest) Descriptor() ([]byte, []int) {
+	return file_realtimeanalytics_v1_realtimeanalytics_proto_rawDescGZIP(), []int{6}
+}
+
+func (x *GetRealtimeQueryDataRequest) GetServiceIds() []string {
+	if x != nil {
+		return x.ServiceIds
+	}
+	return nil
+}
+
+// GetRealtimeQueryDataResponse returns real-time query data.
+type GetRealtimeQueryDataResponse struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// List of query data items.
+	Queries       []*QueryDataItem `protobuf:"bytes,1,rep,name=queries,proto3" json:"queries,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *GetRealtimeQueryDataResponse) Reset() {
+	*x = GetRealtimeQueryDataResponse{}
+	mi := &file_realtimeanalytics_v1_realtimeanalytics_proto_msgTypes[7]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GetRealtimeQueryDataResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetRealtimeQueryDataResponse) ProtoMessage() {}
+
+func (x *GetRealtimeQueryDataResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_realtimeanalytics_v1_realtimeanalytics_proto_msgTypes[7]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetRealtimeQueryDataResponse.ProtoReflect.Descriptor instead.
+func (*GetRealtimeQueryDataResponse) Descriptor() ([]byte, []int) {
+	return file_realtimeanalytics_v1_realtimeanalytics_proto_rawDescGZIP(), []int{7}
+}
+
+func (x *GetRealtimeQueryDataResponse) GetQueries() []*QueryDataItem {
+	if x != nil {
+		return x.Queries
+	}
+	return nil
+}
+
 var File_realtimeanalytics_v1_realtimeanalytics_proto protoreflect.FileDescriptor
 
 const file_realtimeanalytics_v1_realtimeanalytics_proto_rawDesc = "" +
@@ -315,10 +526,27 @@ const file_realtimeanalytics_v1_realtimeanalytics_proto_rawDesc = "" +
 	"\x06enable\x18\x01 \x01(\bR\x06enable\x12&\n" +
 	"\n" +
 	"service_id\x18\x02 \x01(\tB\a\xfaB\x04r\x02\x10\x01R\tserviceId\"!\n" +
-	"\x1fChangeRealtimeAnalyticsResponse2\x91\x05\n" +
+	"\x1fChangeRealtimeAnalyticsResponse\"\xb2\x02\n" +
+	"\rQueryDataItem\x12\x19\n" +
+	"\bquery_id\x18\x01 \x01(\tR\aqueryId\x12\x1d\n" +
+	"\n" +
+	"service_id\x18\x02 \x01(\tR\tserviceId\x12!\n" +
+	"\fservice_name\x18\x03 \x01(\tR\vserviceName\x12\x18\n" +
+	"\acluster\x18\x04 \x01(\tR\acluster\x12\x1c\n" +
+	"\tnamespace\x18\x05 \x01(\tR\tnamespace\x12\x14\n" +
+	"\x05query\x18\x06 \x01(\tR\x05query\x12 \n" +
+	"\vfingerprint\x18\a \x01(\tR\vfingerprint\x12\x1a\n" +
+	"\bduration\x18\b \x01(\x01R\bduration\x128\n" +
+	"\ttimestamp\x18\t \x01(\v2\x1a.google.protobuf.TimestampR\ttimestamp\">\n" +
+	"\x1bGetRealtimeQueryDataRequest\x12\x1f\n" +
+	"\vservice_ids\x18\x01 \x03(\tR\n" +
+	"serviceIds\"]\n" +
+	"\x1cGetRealtimeQueryDataResponse\x12=\n" +
+	"\aqueries\x18\x01 \x03(\v2#.realtimeanalytics.v1.QueryDataItemR\aqueries2\xd5\a\n" +
 	"\x18RealtimeAnalyticsService\x12\xdc\x02\n" +
 	"\x19ListRunningRealtimeAgents\x126.realtimeanalytics.v1.ListRunningRealtimeAgentsRequest\x1a7.realtimeanalytics.v1.ListRunningRealtimeAgentsResponse\"\xcd\x01\x92A\xae\x01\x12\x17List Running RTA Agents\x1a\x92\x01Returns the list of all currently running Real-Time Analytics agents with their details including service, cluster, agent, and status information.\x82\xd3\xe4\x93\x02\x15\x12\x13/v1/realtime/agents\x12\x95\x02\n" +
-	"\x17ChangeRealtimeAnalytics\x124.realtimeanalytics.v1.ChangeRealtimeAnalyticsRequest\x1a5.realtimeanalytics.v1.ChangeRealtimeAnalyticsResponse\"\x8c\x01\x92Ak\x12(Change Real-Time Analytics Configuration\x1a?Enables or disables Real-Time Analytics for a specific service.\x82\xd3\xe4\x93\x02\x18:\x01*\"\x13/v1/realtime/changeB\xe8\x01\n" +
+	"\x17ChangeRealtimeAnalytics\x124.realtimeanalytics.v1.ChangeRealtimeAnalyticsRequest\x1a5.realtimeanalytics.v1.ChangeRealtimeAnalyticsResponse\"\x8c\x01\x92Ak\x12(Change Real-Time Analytics Configuration\x1a?Enables or disables Real-Time Analytics for a specific service.\x82\xd3\xe4\x93\x02\x18:\x01*\"\x13/v1/realtime/change\x12\xc1\x02\n" +
+	"\x14GetRealtimeQueryData\x121.realtimeanalytics.v1.GetRealtimeQueryDataRequest\x1a2.realtimeanalytics.v1.GetRealtimeQueryDataResponse\"\xc1\x01\x92A\x9e\x01\x12\x18Get Real-Time Query Data\x1a\x81\x01Returns real-time query data from the in-memory store. Supports filtering by service IDs. Designed for short polling from the UI.\x82\xd3\xe4\x93\x02\x19\x12\x17/v1/realtime/query-dataB\xe8\x01\n" +
 	"\x18com.realtimeanalytics.v1B\x16RealtimeanalyticsProtoP\x01ZCgithub.com/percona/pmm/api/realtimeanalytics/v1;realtimeanalyticsv1\xa2\x02\x03RXX\xaa\x02\x14Realtimeanalytics.V1\xca\x02\x14Realtimeanalytics\\V1\xe2\x02 Realtimeanalytics\\V1\\GPBMetadata\xea\x02\x15Realtimeanalytics::V1b\x06proto3"
 
 var (
@@ -334,31 +562,38 @@ func file_realtimeanalytics_v1_realtimeanalytics_proto_rawDescGZIP() []byte {
 }
 
 var (
-	file_realtimeanalytics_v1_realtimeanalytics_proto_msgTypes = make([]protoimpl.MessageInfo, 5)
+	file_realtimeanalytics_v1_realtimeanalytics_proto_msgTypes = make([]protoimpl.MessageInfo, 8)
 	file_realtimeanalytics_v1_realtimeanalytics_proto_goTypes  = []any{
 		(*RunningRealtimeAgent)(nil),              // 0: realtimeanalytics.v1.RunningRealtimeAgent
 		(*ListRunningRealtimeAgentsRequest)(nil),  // 1: realtimeanalytics.v1.ListRunningRealtimeAgentsRequest
 		(*ListRunningRealtimeAgentsResponse)(nil), // 2: realtimeanalytics.v1.ListRunningRealtimeAgentsResponse
 		(*ChangeRealtimeAnalyticsRequest)(nil),    // 3: realtimeanalytics.v1.ChangeRealtimeAnalyticsRequest
 		(*ChangeRealtimeAnalyticsResponse)(nil),   // 4: realtimeanalytics.v1.ChangeRealtimeAnalyticsResponse
-		(*timestamppb.Timestamp)(nil),             // 5: google.protobuf.Timestamp
-		(v1.AgentStatus)(0),                       // 6: inventory.v1.AgentStatus
+		(*QueryDataItem)(nil),                     // 5: realtimeanalytics.v1.QueryDataItem
+		(*GetRealtimeQueryDataRequest)(nil),       // 6: realtimeanalytics.v1.GetRealtimeQueryDataRequest
+		(*GetRealtimeQueryDataResponse)(nil),      // 7: realtimeanalytics.v1.GetRealtimeQueryDataResponse
+		(*timestamppb.Timestamp)(nil),             // 8: google.protobuf.Timestamp
+		(v1.AgentStatus)(0),                       // 9: inventory.v1.AgentStatus
 	}
 )
 
 var file_realtimeanalytics_v1_realtimeanalytics_proto_depIdxs = []int32{
-	5, // 0: realtimeanalytics.v1.RunningRealtimeAgent.started_at:type_name -> google.protobuf.Timestamp
-	6, // 1: realtimeanalytics.v1.RunningRealtimeAgent.status:type_name -> inventory.v1.AgentStatus
+	8, // 0: realtimeanalytics.v1.RunningRealtimeAgent.started_at:type_name -> google.protobuf.Timestamp
+	9, // 1: realtimeanalytics.v1.RunningRealtimeAgent.status:type_name -> inventory.v1.AgentStatus
 	0, // 2: realtimeanalytics.v1.ListRunningRealtimeAgentsResponse.agents:type_name -> realtimeanalytics.v1.RunningRealtimeAgent
-	1, // 3: realtimeanalytics.v1.RealtimeAnalyticsService.ListRunningRealtimeAgents:input_type -> realtimeanalytics.v1.ListRunningRealtimeAgentsRequest
-	3, // 4: realtimeanalytics.v1.RealtimeAnalyticsService.ChangeRealtimeAnalytics:input_type -> realtimeanalytics.v1.ChangeRealtimeAnalyticsRequest
-	2, // 5: realtimeanalytics.v1.RealtimeAnalyticsService.ListRunningRealtimeAgents:output_type -> realtimeanalytics.v1.ListRunningRealtimeAgentsResponse
-	4, // 6: realtimeanalytics.v1.RealtimeAnalyticsService.ChangeRealtimeAnalytics:output_type -> realtimeanalytics.v1.ChangeRealtimeAnalyticsResponse
-	5, // [5:7] is the sub-list for method output_type
-	3, // [3:5] is the sub-list for method input_type
-	3, // [3:3] is the sub-list for extension type_name
-	3, // [3:3] is the sub-list for extension extendee
-	0, // [0:3] is the sub-list for field type_name
+	8, // 3: realtimeanalytics.v1.QueryDataItem.timestamp:type_name -> google.protobuf.Timestamp
+	5, // 4: realtimeanalytics.v1.GetRealtimeQueryDataResponse.queries:type_name -> realtimeanalytics.v1.QueryDataItem
+	1, // 5: realtimeanalytics.v1.RealtimeAnalyticsService.ListRunningRealtimeAgents:input_type -> realtimeanalytics.v1.ListRunningRealtimeAgentsRequest
+	3, // 6: realtimeanalytics.v1.RealtimeAnalyticsService.ChangeRealtimeAnalytics:input_type -> realtimeanalytics.v1.ChangeRealtimeAnalyticsRequest
+	6, // 7: realtimeanalytics.v1.RealtimeAnalyticsService.GetRealtimeQueryData:input_type -> realtimeanalytics.v1.GetRealtimeQueryDataRequest
+	2, // 8: realtimeanalytics.v1.RealtimeAnalyticsService.ListRunningRealtimeAgents:output_type -> realtimeanalytics.v1.ListRunningRealtimeAgentsResponse
+	4, // 9: realtimeanalytics.v1.RealtimeAnalyticsService.ChangeRealtimeAnalytics:output_type -> realtimeanalytics.v1.ChangeRealtimeAnalyticsResponse
+	7, // 10: realtimeanalytics.v1.RealtimeAnalyticsService.GetRealtimeQueryData:output_type -> realtimeanalytics.v1.GetRealtimeQueryDataResponse
+	8, // [8:11] is the sub-list for method output_type
+	5, // [5:8] is the sub-list for method input_type
+	5, // [5:5] is the sub-list for extension type_name
+	5, // [5:5] is the sub-list for extension extendee
+	0, // [0:5] is the sub-list for field type_name
 }
 
 func init() { file_realtimeanalytics_v1_realtimeanalytics_proto_init() }
@@ -372,7 +607,7 @@ func file_realtimeanalytics_v1_realtimeanalytics_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_realtimeanalytics_v1_realtimeanalytics_proto_rawDesc), len(file_realtimeanalytics_v1_realtimeanalytics_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   5,
+			NumMessages:   8,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

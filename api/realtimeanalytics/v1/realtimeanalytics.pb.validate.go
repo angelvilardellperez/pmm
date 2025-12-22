@@ -642,3 +642,388 @@ var _ interface {
 	Cause() error
 	ErrorName() string
 } = ChangeRealtimeAnalyticsResponseValidationError{}
+
+// Validate checks the field values on QueryDataItem with the rules defined in
+// the proto definition for this message. If any rules are violated, the first
+// error encountered is returned, or nil if there are no violations.
+func (m *QueryDataItem) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on QueryDataItem with the rules defined
+// in the proto definition for this message. If any rules are violated, the
+// result is a list of violation errors wrapped in QueryDataItemMultiError, or
+// nil if none found.
+func (m *QueryDataItem) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *QueryDataItem) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	// no validation rules for QueryId
+
+	// no validation rules for ServiceId
+
+	// no validation rules for ServiceName
+
+	// no validation rules for Cluster
+
+	// no validation rules for Namespace
+
+	// no validation rules for Query
+
+	// no validation rules for Fingerprint
+
+	// no validation rules for Duration
+
+	if all {
+		switch v := interface{}(m.GetTimestamp()).(type) {
+		case interface{ ValidateAll() error }:
+			if err := v.ValidateAll(); err != nil {
+				errors = append(errors, QueryDataItemValidationError{
+					field:  "Timestamp",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		case interface{ Validate() error }:
+			if err := v.Validate(); err != nil {
+				errors = append(errors, QueryDataItemValidationError{
+					field:  "Timestamp",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		}
+	} else if v, ok := interface{}(m.GetTimestamp()).(interface{ Validate() error }); ok {
+		if err := v.Validate(); err != nil {
+			return QueryDataItemValidationError{
+				field:  "Timestamp",
+				reason: "embedded message failed validation",
+				cause:  err,
+			}
+		}
+	}
+
+	if len(errors) > 0 {
+		return QueryDataItemMultiError(errors)
+	}
+
+	return nil
+}
+
+// QueryDataItemMultiError is an error wrapping multiple validation errors
+// returned by QueryDataItem.ValidateAll() if the designated constraints
+// aren't met.
+type QueryDataItemMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m QueryDataItemMultiError) Error() string {
+	msgs := make([]string, 0, len(m))
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m QueryDataItemMultiError) AllErrors() []error { return m }
+
+// QueryDataItemValidationError is the validation error returned by
+// QueryDataItem.Validate if the designated constraints aren't met.
+type QueryDataItemValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e QueryDataItemValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e QueryDataItemValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e QueryDataItemValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e QueryDataItemValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e QueryDataItemValidationError) ErrorName() string { return "QueryDataItemValidationError" }
+
+// Error satisfies the builtin error interface
+func (e QueryDataItemValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sQueryDataItem.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = QueryDataItemValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = QueryDataItemValidationError{}
+
+// Validate checks the field values on GetRealtimeQueryDataRequest with the
+// rules defined in the proto definition for this message. If any rules are
+// violated, the first error encountered is returned, or nil if there are no violations.
+func (m *GetRealtimeQueryDataRequest) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on GetRealtimeQueryDataRequest with the
+// rules defined in the proto definition for this message. If any rules are
+// violated, the result is a list of violation errors wrapped in
+// GetRealtimeQueryDataRequestMultiError, or nil if none found.
+func (m *GetRealtimeQueryDataRequest) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *GetRealtimeQueryDataRequest) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	if len(errors) > 0 {
+		return GetRealtimeQueryDataRequestMultiError(errors)
+	}
+
+	return nil
+}
+
+// GetRealtimeQueryDataRequestMultiError is an error wrapping multiple
+// validation errors returned by GetRealtimeQueryDataRequest.ValidateAll() if
+// the designated constraints aren't met.
+type GetRealtimeQueryDataRequestMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m GetRealtimeQueryDataRequestMultiError) Error() string {
+	msgs := make([]string, 0, len(m))
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m GetRealtimeQueryDataRequestMultiError) AllErrors() []error { return m }
+
+// GetRealtimeQueryDataRequestValidationError is the validation error returned
+// by GetRealtimeQueryDataRequest.Validate if the designated constraints
+// aren't met.
+type GetRealtimeQueryDataRequestValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e GetRealtimeQueryDataRequestValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e GetRealtimeQueryDataRequestValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e GetRealtimeQueryDataRequestValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e GetRealtimeQueryDataRequestValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e GetRealtimeQueryDataRequestValidationError) ErrorName() string {
+	return "GetRealtimeQueryDataRequestValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e GetRealtimeQueryDataRequestValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sGetRealtimeQueryDataRequest.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = GetRealtimeQueryDataRequestValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = GetRealtimeQueryDataRequestValidationError{}
+
+// Validate checks the field values on GetRealtimeQueryDataResponse with the
+// rules defined in the proto definition for this message. If any rules are
+// violated, the first error encountered is returned, or nil if there are no violations.
+func (m *GetRealtimeQueryDataResponse) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on GetRealtimeQueryDataResponse with the
+// rules defined in the proto definition for this message. If any rules are
+// violated, the result is a list of violation errors wrapped in
+// GetRealtimeQueryDataResponseMultiError, or nil if none found.
+func (m *GetRealtimeQueryDataResponse) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *GetRealtimeQueryDataResponse) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	for idx, item := range m.GetQueries() {
+		_, _ = idx, item
+
+		if all {
+			switch v := interface{}(item).(type) {
+			case interface{ ValidateAll() error }:
+				if err := v.ValidateAll(); err != nil {
+					errors = append(errors, GetRealtimeQueryDataResponseValidationError{
+						field:  fmt.Sprintf("Queries[%v]", idx),
+						reason: "embedded message failed validation",
+						cause:  err,
+					})
+				}
+			case interface{ Validate() error }:
+				if err := v.Validate(); err != nil {
+					errors = append(errors, GetRealtimeQueryDataResponseValidationError{
+						field:  fmt.Sprintf("Queries[%v]", idx),
+						reason: "embedded message failed validation",
+						cause:  err,
+					})
+				}
+			}
+		} else if v, ok := interface{}(item).(interface{ Validate() error }); ok {
+			if err := v.Validate(); err != nil {
+				return GetRealtimeQueryDataResponseValidationError{
+					field:  fmt.Sprintf("Queries[%v]", idx),
+					reason: "embedded message failed validation",
+					cause:  err,
+				}
+			}
+		}
+
+	}
+
+	if len(errors) > 0 {
+		return GetRealtimeQueryDataResponseMultiError(errors)
+	}
+
+	return nil
+}
+
+// GetRealtimeQueryDataResponseMultiError is an error wrapping multiple
+// validation errors returned by GetRealtimeQueryDataResponse.ValidateAll() if
+// the designated constraints aren't met.
+type GetRealtimeQueryDataResponseMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m GetRealtimeQueryDataResponseMultiError) Error() string {
+	msgs := make([]string, 0, len(m))
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m GetRealtimeQueryDataResponseMultiError) AllErrors() []error { return m }
+
+// GetRealtimeQueryDataResponseValidationError is the validation error returned
+// by GetRealtimeQueryDataResponse.Validate if the designated constraints
+// aren't met.
+type GetRealtimeQueryDataResponseValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e GetRealtimeQueryDataResponseValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e GetRealtimeQueryDataResponseValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e GetRealtimeQueryDataResponseValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e GetRealtimeQueryDataResponseValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e GetRealtimeQueryDataResponseValidationError) ErrorName() string {
+	return "GetRealtimeQueryDataResponseValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e GetRealtimeQueryDataResponseValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sGetRealtimeQueryDataResponse.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = GetRealtimeQueryDataResponseValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = GetRealtimeQueryDataResponseValidationError{}
