@@ -45,7 +45,7 @@ func TestStore(t *testing.T) {
 
 		store.Set("service1", queries)
 
-		results := store.Get("service1", "")
+		results := store.Get("service1")
 		require.Len(t, results, 1)
 		assert.Equal(t, "q1", results[0].QueryID)
 		assert.Equal(t, "service1", results[0].ServiceID)
@@ -80,10 +80,10 @@ func TestStore(t *testing.T) {
 		stats := store.Stats()
 		assert.Equal(t, numServices, len(stats), "Should have all services")
 
-		// Verify shards are being used (queries should be distributed)
+		// Verify shards are being used (buckets should be distributed)
 		usedShards := 0
 		for i := 0; i < numShards; i++ {
-			if len(store.shards[i].queries) > 0 {
+			if len(store.shards[i].buckets) != 0 {
 				usedShards++
 			}
 		}
@@ -105,81 +105,71 @@ func TestStore(t *testing.T) {
 			{QueryID: "q4", ServiceID: "s3", Cluster: "c2", Timestamp: time.Now()},
 		})
 
-		t.Run("filter by service", func(t *testing.T) {
-			results := store.Get("s1", "")
-			require.Len(t, results, 2)
-			assert.Equal(t, "q1", results[0].QueryID)
-			assert.Equal(t, "q2", results[1].QueryID)
-		})
-
-		t.Run("filter by service and cluster", func(t *testing.T) {
-			results := store.Get("s1", "c1")
+		t.Run("get by service", func(t *testing.T) {
+			results := store.Get("s1")
 			require.Len(t, results, 2)
 			assert.Equal(t, "q1", results[0].QueryID)
 			assert.Equal(t, "q2", results[1].QueryID)
 		})
 
 		t.Run("different service", func(t *testing.T) {
-			results := store.Get("s2", "")
+			results := store.Get("s2")
 			require.Len(t, results, 1)
 			assert.Equal(t, "q3", results[0].QueryID)
 		})
 
 		t.Run("non-existent service returns empty", func(t *testing.T) {
-			results := store.Get("nonexistent", "")
+			results := store.Get("nonexistent")
 			require.Empty(t, results)
 		})
 	})
 
-	t.Run("TTL", func(t *testing.T) {
+	t.Run("BucketTTL", func(t *testing.T) {
 		store := NewStore()
 		store.ttl = 100 * time.Millisecond // Short TTL for testing
 
+		// Set some queries
 		queries := []*QueryData{
-			{
-				QueryID:   "old",
-				ServiceID: "service1",
-				Timestamp: time.Now().Add(-200 * time.Millisecond), // Already expired
-			},
-			{
-				QueryID:   "new",
-				ServiceID: "service1",
-				Timestamp: time.Now(),
-			},
+			{QueryID: "q1", ServiceID: "service1", Timestamp: time.Now()},
+			{QueryID: "q2", ServiceID: "service1", Timestamp: time.Now()},
 		}
-
 		store.Set("service1", queries)
 
-		// Get should filter out expired queries
-		results := store.Get("service1", "")
-		require.Len(t, results, 1, "Should only return non-expired query")
-		assert.Equal(t, "new", results[0].QueryID)
+		// Wait for bucket to expire
+		time.Sleep(150 * time.Millisecond)
+
+		// Get should return empty because bucket is expired
+		results := store.Get("service1")
+		require.Empty(t, results, "Should return empty for expired bucket")
 	})
 
 	t.Run("Cleanup", func(t *testing.T) {
 		store := NewStore()
 		store.ttl = 50 * time.Millisecond
 
-		// Set some queries
-		queries := make([]*QueryData, 5)
-		for i := range 5 {
-			queries[i] = &QueryData{
-				QueryID:   string(rune('a' + i)),
-				ServiceID: "service1",
-				Timestamp: time.Now(),
-			}
-		}
-		store.Set("service1", queries)
+		// Set queries that will expire
+		store.Set("service1", []*QueryData{
+			{QueryID: "q1", ServiceID: "service1", Timestamp: time.Now()},
+		})
 
-		// Wait for queries to expire
-		time.Sleep(100 * time.Millisecond)
+		// Wait for service1 bucket to expire
+		time.Sleep(60 * time.Millisecond)
+
+		// Set fresh queries for service2
+		store.Set("service2", []*QueryData{
+			{QueryID: "q2", ServiceID: "service2", Timestamp: time.Now()},
+		})
 
 		// Run cleanup
 		store.cleanup()
 
-		// Check that queries were removed
-		results := store.Get("service1", "")
-		assert.Empty(t, results, "Service entry should be removed after all queries expire")
+		// Check that expired bucket was removed
+		results := store.Get("service1")
+		assert.Empty(t, results, "Expired bucket should be removed")
+
+		// Check that fresh bucket remains
+		results = store.Get("service2")
+		assert.Len(t, results, 1, "Fresh bucket should remain")
 	})
 
 	t.Run("Clear", func(t *testing.T) {
@@ -190,15 +180,15 @@ func TestStore(t *testing.T) {
 
 		store.Clear("service1")
 
-		results := store.Get("service1", "")
+		results := store.Get("service1")
 		assert.Empty(t, results, "service1 queries should be cleared")
 
-		results = store.Get("service2", "")
+		results = store.Get("service2")
 		assert.Len(t, results, 1, "service2 queries should remain")
 
 		// Test that clearing non-existent service doesn't panic
 		store.Clear("nonexistent")
-		results = store.Get("nonexistent", "")
+		results = store.Get("nonexistent")
 		assert.Empty(t, results, "non-existent service should return empty")
 	})
 
@@ -216,6 +206,30 @@ func TestStore(t *testing.T) {
 		stats := store.Stats()
 		assert.Equal(t, 2, stats["s1"], "Should have 2 queries for s1")
 		assert.Equal(t, 1, stats["s2"], "Should have 1 query for s2")
+	})
+
+	t.Run("Run_Cleanup", func(t *testing.T) {
+		store := NewStore()
+		store.ttl = 50 * time.Millisecond
+
+		// Start cleanup goroutine
+		ctx := t.Context()
+		go store.Run(ctx)
+
+		// Set queries that will expire
+		store.Set("service1", []*QueryData{
+			{QueryID: "q1", ServiceID: "service1", Timestamp: time.Now()},
+		})
+
+		// Wait for bucket to expire
+		time.Sleep(60 * time.Millisecond)
+
+		// Manually trigger cleanup for the test
+		store.cleanup()
+
+		// Check that expired data was removed
+		results := store.Get("service1")
+		assert.Empty(t, results, "Cleanup should have removed expired bucket")
 	})
 
 	t.Run("ThreadSafety", func(t *testing.T) {
@@ -240,14 +254,14 @@ func TestStore(t *testing.T) {
 		// Concurrent reads
 		for range 50 {
 			wg.Go(func() {
-				_ = store.Get("service1", "")
+				_ = store.Get("service1")
 			})
 		}
 
 		wg.Wait()
 
 		// Should not panic and should have data
-		results := store.Get("service1", "")
+		results := store.Get("service1")
 		assert.NotEmpty(t, results)
 	})
 }
