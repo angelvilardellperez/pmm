@@ -168,7 +168,7 @@ func (s *Service) GetRealtimeQueryData(_ context.Context, req *rtav1.GetRealtime
 	// Fetch data from store for each service ID
 	var allQueries []*QueryData
 	for _, serviceID := range req.ServiceIds {
-		queries := s.store.Get(serviceID, "" /* no cluster filter */)
+		queries := s.store.Get(serviceID)
 		allQueries = append(allQueries, queries...)
 	}
 
