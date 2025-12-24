@@ -424,8 +424,8 @@ func (x *QueryDataItem) GetTimestamp() *timestamppb.Timestamp {
 // GetRealtimeQueryDataRequest contains filters for fetching real-time query data.
 type GetRealtimeQueryDataRequest struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
-	// Optional list of service IDs to filter by (OR logic).
-	// If empty, returns data for all services.
+	// List of service IDs to filter by (OR logic).
+	// Required - at least one service ID must be provided.
 	ServiceIds    []string `protobuf:"bytes,1,rep,name=service_ids,json=serviceIds,proto3" json:"service_ids,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
@@ -547,9 +547,9 @@ const file_realtimeanalytics_v1_realtimeanalytics_proto_rawDesc = "" +
 	"\x05query\x18\x06 \x01(\tR\x05query\x12 \n" +
 	"\vfingerprint\x18\a \x01(\tR\vfingerprint\x12\x1a\n" +
 	"\bduration\x18\b \x01(\x01R\bduration\x128\n" +
-	"\ttimestamp\x18\t \x01(\v2\x1a.google.protobuf.TimestampR\ttimestamp\">\n" +
-	"\x1bGetRealtimeQueryDataRequest\x12\x1f\n" +
-	"\vservice_ids\x18\x01 \x03(\tR\n" +
+	"\ttimestamp\x18\t \x01(\v2\x1a.google.protobuf.TimestampR\ttimestamp\"H\n" +
+	"\x1bGetRealtimeQueryDataRequest\x12)\n" +
+	"\vservice_ids\x18\x01 \x03(\tB\b\xfaB\x05\x92\x01\x02\b\x01R\n" +
 	"serviceIds\"]\n" +
 	"\x1cGetRealtimeQueryDataResponse\x12=\n" +
 	"\aqueries\x18\x01 \x03(\v2#.realtimeanalytics.v1.QueryDataItemR\aqueries2\xd5\a\n" +

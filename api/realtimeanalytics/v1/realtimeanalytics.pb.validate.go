@@ -812,6 +812,17 @@ func (m *GetRealtimeQueryDataRequest) validate(all bool) error {
 
 	var errors []error
 
+	if len(m.GetServiceIds()) < 1 {
+		err := GetRealtimeQueryDataRequestValidationError{
+			field:  "ServiceIds",
+			reason: "value must contain at least 1 item(s)",
+		}
+		if !all {
+			return err
+		}
+		errors = append(errors, err)
+	}
+
 	if len(errors) > 0 {
 		return GetRealtimeQueryDataRequestMultiError(errors)
 	}
