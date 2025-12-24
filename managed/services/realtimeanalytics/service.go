@@ -164,7 +164,7 @@ func (s *Service) ChangeRealtimeAnalytics(_ context.Context, req *rtav1.ChangeRe
 }
 
 // GetRealtimeQueryData returns real-time query data from the in-memory store (gRPC handler).
-func (s *Service) GetRealtimeQueryData(_ context.Context, req *rtav1.GetRealtimeQueryDataRequest) (*rtav1.GetRealtimeQueryDataResponse, error) {
+func (s *Service) GetRealtimeQueryData(_ context.Context, req *rtav1.GetRealtimeQueryDataRequest) (*rtav1.GetRealtimeQueryDataResponse, error) { //nolint:unparam
 	// Fetch data from store for each service ID
 	var allQueries []*QueryData
 	for _, serviceID := range req.ServiceIds {
