@@ -286,3 +286,171 @@ func TestChangeRealtimeAnalytics(t *testing.T) {
 		require.Empty(t, agents, "No agent should be created when disabling non-existent agent")
 	})
 }
+
+func TestGetRealtimeQueryData(t *testing.T) {
+	sqlDB := testdb.Open(t, models.SkipFixtures, nil)
+	db := reform.NewDB(sqlDB, postgresql.Dialect, reform.NewPrintfLogger(t.Logf))
+
+	// Create test data
+	node, err := models.CreateNode(db.Querier, models.GenericNodeType, &models.CreateNodeParams{
+		NodeName: "test-node",
+	})
+	require.NoError(t, err)
+
+	service1, err := models.AddNewService(db.Querier, models.MongoDBServiceType, &models.AddDBMSServiceParams{
+		ServiceName: "mongodb-1",
+		NodeID:      node.NodeID,
+		Address:     pointer.ToString("127.0.0.1"),
+		Port:        pointer.ToUint16(27017),
+		Cluster:     "cluster-1",
+	})
+	require.NoError(t, err)
+
+	service2, err := models.AddNewService(db.Querier, models.MongoDBServiceType, &models.AddDBMSServiceParams{
+		ServiceName: "mongodb-2",
+		NodeID:      node.NodeID,
+		Address:     pointer.ToString("127.0.0.2"),
+		Port:        pointer.ToUint16(27017),
+		Cluster:     "cluster-1",
+	})
+	require.NoError(t, err)
+
+	registry := &mockAgentsRegistry{
+		connectedAgents: map[string]bool{},
+	}
+	store := NewStore()
+	svc := NewService(db, registry, store)
+
+	t.Run("empty result when no data", func(t *testing.T) {
+		resp, err := svc.GetRealtimeQueryData(context.Background(), &rtav1.GetRealtimeQueryDataRequest{
+			ServiceIds: []string{service1.ServiceID},
+		})
+		require.NoError(t, err)
+		assert.Empty(t, resp.Queries)
+	})
+
+	t.Run("returns data for single service", func(t *testing.T) {
+		// Add query data to store
+		now := time.Now()
+		queries := []*QueryData{
+			{
+				QueryID:     "query1",
+				ServiceID:   service1.ServiceID,
+				ServiceName: service1.ServiceName,
+				Cluster:     service1.Cluster,
+				Namespace:   "testdb.collection",
+				Query:       `{"find":"collection"}`,
+				Fingerprint: "fp1",
+				Duration:    100.5,
+				Timestamp:   now,
+			},
+			{
+				QueryID:     "query2",
+				ServiceID:   service1.ServiceID,
+				ServiceName: service1.ServiceName,
+				Cluster:     service1.Cluster,
+				Namespace:   "testdb.collection2",
+				Query:       `{"aggregate":"collection2"}`,
+				Fingerprint: "fp2",
+				Duration:    200.5,
+				Timestamp:   now,
+			},
+		}
+		store.Set(service1.ServiceID, queries)
+
+		resp, err := svc.GetRealtimeQueryData(context.Background(), &rtav1.GetRealtimeQueryDataRequest{
+			ServiceIds: []string{service1.ServiceID},
+		})
+		require.NoError(t, err)
+		require.Len(t, resp.Queries, 2)
+
+		assert.Equal(t, "query1", resp.Queries[0].QueryId)
+		assert.Equal(t, service1.ServiceID, resp.Queries[0].ServiceId)
+		assert.Equal(t, service1.ServiceName, resp.Queries[0].ServiceName)
+		assert.Equal(t, "testdb.collection", resp.Queries[0].Namespace)
+		assert.Equal(t, `{"find":"collection"}`, resp.Queries[0].Query)
+		assert.Equal(t, "fp1", resp.Queries[0].Fingerprint)
+		assert.Equal(t, 100.5, resp.Queries[0].Duration)
+	})
+
+	t.Run("returns data for multiple services", func(t *testing.T) {
+		// Add query data for both services
+		now := time.Now()
+		store.Set(service1.ServiceID, []*QueryData{
+			{
+				QueryID:     "query1",
+				ServiceID:   service1.ServiceID,
+				ServiceName: service1.ServiceName,
+				Cluster:     service1.Cluster,
+				Namespace:   "db.coll",
+				Query:       `{"find":"coll"}`,
+				Fingerprint: "fp1",
+				Duration:    50.0,
+				Timestamp:   now,
+			},
+		})
+		store.Set(service2.ServiceID, []*QueryData{
+			{
+				QueryID:     "query2",
+				ServiceID:   service2.ServiceID,
+				ServiceName: service2.ServiceName,
+				Cluster:     service2.Cluster,
+				Namespace:   "db.coll2",
+				Query:       `{"find":"coll2"}`,
+				Fingerprint: "fp2",
+				Duration:    75.0,
+				Timestamp:   now,
+			},
+		})
+
+		resp, err := svc.GetRealtimeQueryData(context.Background(), &rtav1.GetRealtimeQueryDataRequest{
+			ServiceIds: []string{service1.ServiceID, service2.ServiceID},
+		})
+		require.NoError(t, err)
+		require.Len(t, resp.Queries, 2)
+
+		// Verify we got data from both services
+		serviceIDs := []string{resp.Queries[0].ServiceId, resp.Queries[1].ServiceId}
+		assert.Contains(t, serviceIDs, service1.ServiceID)
+		assert.Contains(t, serviceIDs, service2.ServiceID)
+	})
+
+	t.Run("filters out non-requested services", func(t *testing.T) {
+		now := time.Now()
+		store.Set(service1.ServiceID, []*QueryData{
+			{
+				QueryID:     "query1",
+				ServiceID:   service1.ServiceID,
+				ServiceName: service1.ServiceName,
+				Cluster:     service1.Cluster,
+				Namespace:   "db.coll",
+				Query:       `{"find":"coll"}`,
+				Fingerprint: "fp1",
+				Duration:    50.0,
+				Timestamp:   now,
+			},
+		})
+		store.Set(service2.ServiceID, []*QueryData{
+			{
+				QueryID:     "query2",
+				ServiceID:   service2.ServiceID,
+				ServiceName: service2.ServiceName,
+				Cluster:     service2.Cluster,
+				Namespace:   "db.coll2",
+				Query:       `{"find":"coll2"}`,
+				Fingerprint: "fp2",
+				Duration:    75.0,
+				Timestamp:   now,
+			},
+		})
+
+		// Request only service1
+		resp, err := svc.GetRealtimeQueryData(context.Background(), &rtav1.GetRealtimeQueryDataRequest{
+			ServiceIds: []string{service1.ServiceID},
+		})
+		require.NoError(t, err)
+		require.Len(t, resp.Queries, 1)
+		assert.Equal(t, service1.ServiceID, resp.Queries[0].ServiceId)
+	})
+
+}

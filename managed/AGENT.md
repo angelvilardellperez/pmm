@@ -99,6 +99,18 @@ Multiple code generation tools are used:
 - Adding/modifying reform models
 - Changing interface signatures that need mocks
 
+**Running make targets in Docker:**
+
+All make targets should be run inside the Docker development container as the root user:
+
+```bash
+make env-root TARGET=gen
+make env-root TARGET=test
+make env-root TARGET=install
+```
+
+This ensures consistent tooling versions and proper permissions for generated files.
+
 ## Common Patterns
 
 ### Do
