@@ -310,7 +310,9 @@ func runGRPCServer(ctx context.Context, deps *gRPCServerDeps) {
 
 	// Start generator for testing (TODO: remove in production or make configurable)
 	gen := realtimeanalytics.NewGenerator(rtaStore, deps.db)
-	go gen.Run(ctx)
+	if rtaEnabled, err := strconv.ParseBool(os.Getenv("PMM_DEV_RTA_GENERATOR_ENABLED")); err == nil && rtaEnabled {
+		go gen.Run(ctx)
+	}
 
 	// run server until it is stopped gracefully or not
 	listener, err := net.Listen("tcp", gRPCAddr)
