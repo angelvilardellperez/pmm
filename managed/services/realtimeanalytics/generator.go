@@ -28,33 +28,33 @@ import (
 	"github.com/percona/pmm/managed/models"
 )
 
-// MockGenerator generates mock query data for testing purposes.
-type MockGenerator struct {
+// Generator generates mock query data for testing purposes.
+type Generator struct {
 	l     *logrus.Entry
 	store *Store
 	db    *reform.DB
 }
 
-// NewMockGenerator creates a new mock generator.
-func NewMockGenerator(store *Store, db *reform.DB) *MockGenerator {
-	return &MockGenerator{
-		l:     logrus.WithField("component", "realtimeanalytics/mock"),
+// NewGenerator creates a new generator.
+func NewGenerator(store *Store, db *reform.DB) *Generator {
+	return &Generator{
+		l:     logrus.WithField("component", "realtimeanalytics/generator"),
 		store: store,
 		db:    db,
 	}
 }
 
 // Run starts generating mock data in the background.
-func (m *MockGenerator) Run(ctx context.Context) {
+func (m *Generator) Run(ctx context.Context) {
 	ticker := time.NewTicker(1 * time.Second)
 	defer ticker.Stop()
 
-	m.l.Info("Mock generator started")
+	m.l.Info("Generator started")
 
 	for {
 		select {
 		case <-ctx.Done():
-			m.l.Info("Mock generator stopped")
+			m.l.Info("Generator stopped")
 			return
 		case <-ticker.C:
 			m.generateAndPush()
@@ -63,7 +63,7 @@ func (m *MockGenerator) Run(ctx context.Context) {
 }
 
 // generateAndPush generates mock query data for all RTA-enabled services.
-func (m *MockGenerator) generateAndPush() {
+func (m *Generator) generateAndPush() {
 	// Get all agents with RTA enabled
 	agentType := models.RTAMongoDBAgentType
 	agents, err := models.FindAgents(m.db.Querier, models.AgentFilters{
@@ -110,7 +110,7 @@ func (m *MockGenerator) generateAndPush() {
 }
 
 // generateQuery generates a single mock query.
-func (m *MockGenerator) generateQuery(serviceID, serviceName, cluster string) *QueryData {
+func (m *Generator) generateQuery(serviceID, serviceName, cluster string) *QueryData {
 	operations := []string{"find", "aggregate", "update", "insert", "delete", "findOne"}
 	collections := []string{"users", "orders", "products", "sessions", "logs", "metrics"}
 	databases := []string{"production", "staging", "analytics", "reporting"}
