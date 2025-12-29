@@ -69,6 +69,10 @@ message QueryDataItem {
   double duration = 8;
   // Timestamp when the query was captured.
   google.protobuf.Timestamp timestamp = 9;
+  // Rows examined by the query.
+  int64 rows_examined = 10;
+  // Rows sent by the query.
+  int64 rows_sent = 11;
 }
 
 // GetRealtimeQueryDataRequest contains filters for fetching real-time query data.

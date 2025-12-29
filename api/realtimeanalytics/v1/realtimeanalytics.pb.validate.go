@@ -712,6 +712,10 @@ func (m *QueryDataItem) validate(all bool) error {
 		}
 	}
 
+	// no validation rules for RowsExamined
+
+	// no validation rules for RowsSent
+
 	if len(errors) > 0 {
 		return QueryDataItemMultiError(errors)
 	}

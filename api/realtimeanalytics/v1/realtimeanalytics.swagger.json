@@ -1,0 +1,301 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "title": "realtimeanalytics/v1/realtimeanalytics.proto",
+    "version": "version not set"
+  },
+  "tags": [
+    {
+      "name": "RealtimeAnalyticsService"
+    }
+  ],
+  "consumes": [
+    "application/json"
+  ],
+  "produces": [
+    "application/json"
+  ],
+  "paths": {
+    "/v1/realtime/agents": {
+      "get": {
+        "summary": "List Running RTA Agents",
+        "description": "Returns the list of all currently running Real-Time Analytics agents with their details including service, cluster, agent, and status information.",
+        "operationId": "ListRunningRealtimeAgents",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1ListRunningRealtimeAgentsResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "cluster",
+            "description": "Optional filter by cluster name.",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "RealtimeAnalyticsService"
+        ]
+      }
+    },
+    "/v1/realtime/change": {
+      "post": {
+        "summary": "Change Real-Time Analytics Configuration",
+        "description": "Enables or disables Real-Time Analytics for a specific service.",
+        "operationId": "ChangeRealtimeAnalytics",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1ChangeRealtimeAnalyticsResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "description": "ChangeRealtimeAnalyticsRequest contains parameters for enabling or disabling RTA.",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/v1ChangeRealtimeAnalyticsRequest"
+            }
+          }
+        ],
+        "tags": [
+          "RealtimeAnalyticsService"
+        ]
+      }
+    },
+    "/v1/realtime/query-data": {
+      "get": {
+        "summary": "Get Real-Time Query Data",
+        "description": "Returns real-time query data from the in-memory store. Supports filtering by service IDs. Designed for short polling from the UI.",
+        "operationId": "GetRealtimeQueryData",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1GetRealtimeQueryDataResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "service_ids",
+            "description": "List of service IDs to filter by (OR logic).\nRequired - at least one service ID must be provided.",
+            "in": "query",
+            "required": false,
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "collectionFormat": "multi"
+          }
+        ],
+        "tags": [
+          "RealtimeAnalyticsService"
+        ]
+      }
+    }
+  },
+  "definitions": {
+    "protobufAny": {
+      "type": "object",
+      "properties": {
+        "@type": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": {}
+    },
+    "rpcStatus": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "message": {
+          "type": "string"
+        },
+        "details": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/protobufAny"
+          }
+        }
+      }
+    },
+    "v1AgentStatus": {
+      "type": "string",
+      "enum": [
+        "AGENT_STATUS_UNSPECIFIED",
+        "AGENT_STATUS_STARTING",
+        "AGENT_STATUS_INITIALIZATION_ERROR",
+        "AGENT_STATUS_RUNNING",
+        "AGENT_STATUS_WAITING",
+        "AGENT_STATUS_STOPPING",
+        "AGENT_STATUS_DONE",
+        "AGENT_STATUS_UNKNOWN"
+      ],
+      "default": "AGENT_STATUS_UNSPECIFIED",
+      "description": "AgentStatus represents actual Agent status.\n\n - AGENT_STATUS_STARTING: Agent is starting.\n - AGENT_STATUS_INITIALIZATION_ERROR: Agent encountered error when starting.\n - AGENT_STATUS_RUNNING: Agent is running.\n - AGENT_STATUS_WAITING: Agent encountered error and will be restarted automatically soon.\n - AGENT_STATUS_STOPPING: Agent is stopping.\n - AGENT_STATUS_DONE: Agent has been stopped or disabled.\n - AGENT_STATUS_UNKNOWN: Agent is not connected, we don't know anything about it's state."
+    },
+    "v1ChangeRealtimeAnalyticsRequest": {
+      "type": "object",
+      "properties": {
+        "enable": {
+          "type": "boolean",
+          "description": "Enable or disable RTA."
+        },
+        "service_id": {
+          "type": "string",
+          "description": "Service identifier."
+        }
+      },
+      "description": "ChangeRealtimeAnalyticsRequest contains parameters for enabling or disabling RTA."
+    },
+    "v1ChangeRealtimeAnalyticsResponse": {
+      "type": "object",
+      "description": "ChangeRealtimeAnalyticsResponse is the response for changing RTA configuration.\n\nEmpty response for now."
+    },
+    "v1GetRealtimeQueryDataResponse": {
+      "type": "object",
+      "properties": {
+        "queries": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/v1QueryDataItem"
+          },
+          "description": "List of query data items."
+        }
+      },
+      "description": "GetRealtimeQueryDataResponse returns real-time query data."
+    },
+    "v1ListRunningRealtimeAgentsResponse": {
+      "type": "object",
+      "properties": {
+        "agents": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/v1RunningRealtimeAgent"
+          },
+          "description": "List of running RTA agents."
+        }
+      },
+      "description": "ListRunningRealtimeAgentsResponse returns the list of running RTA agents."
+    },
+    "v1QueryDataItem": {
+      "type": "object",
+      "properties": {
+        "query_id": {
+          "type": "string",
+          "description": "Unique query identifier."
+        },
+        "service_id": {
+          "type": "string",
+          "description": "Service identifier."
+        },
+        "service_name": {
+          "type": "string",
+          "description": "Service name."
+        },
+        "cluster": {
+          "type": "string",
+          "description": "Cluster name."
+        },
+        "namespace": {
+          "type": "string",
+          "description": "Database namespace (database.collection)."
+        },
+        "query": {
+          "type": "string",
+          "description": "Raw query JSON."
+        },
+        "fingerprint": {
+          "type": "string",
+          "description": "Query fingerprint."
+        },
+        "duration": {
+          "type": "number",
+          "format": "double",
+          "description": "Query duration in milliseconds."
+        },
+        "timestamp": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Timestamp when the query was captured."
+        },
+        "rows_examined": {
+          "type": "string",
+          "format": "int64",
+          "description": "Rows examined by the query."
+        },
+        "rows_sent": {
+          "type": "string",
+          "format": "int64",
+          "description": "Rows sent by the query."
+        }
+      },
+      "description": "QueryDataItem represents a single query in real-time analytics data."
+    },
+    "v1RunningRealtimeAgent": {
+      "type": "object",
+      "properties": {
+        "agent_id": {
+          "type": "string",
+          "description": "Unique agent identifier."
+        },
+        "service_id": {
+          "type": "string",
+          "description": "Service identifier that the agent is monitoring."
+        },
+        "service_name": {
+          "type": "string",
+          "description": "Service name."
+        },
+        "cluster": {
+          "type": "string",
+          "description": "Cluster name the service belongs to."
+        },
+        "started_at": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Timestamp when the agent was started."
+        },
+        "status": {
+          "$ref": "#/definitions/v1AgentStatus",
+          "description": "Current status of the agent."
+        }
+      },
+      "description": "RunningRealtimeAgent represents a currently running RTA agent."
+    }
+  }
+}

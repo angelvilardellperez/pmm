@@ -452,5 +452,4 @@ func TestGetRealtimeQueryData(t *testing.T) {
 		require.Len(t, resp.Queries, 1)
 		assert.Equal(t, service1.ServiceID, resp.Queries[0].ServiceId)
 	})
-
 }

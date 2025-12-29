@@ -323,7 +323,11 @@ type QueryDataItem struct {
 	// Query duration in milliseconds.
 	Duration float64 `protobuf:"fixed64,8,opt,name=duration,proto3" json:"duration,omitempty"`
 	// Timestamp when the query was captured.
-	Timestamp     *timestamppb.Timestamp `protobuf:"bytes,9,opt,name=timestamp,proto3" json:"timestamp,omitempty"`
+	Timestamp *timestamppb.Timestamp `protobuf:"bytes,9,opt,name=timestamp,proto3" json:"timestamp,omitempty"`
+	// Rows examined by the query.
+	RowsExamined int64 `protobuf:"varint,10,opt,name=rows_examined,json=rowsExamined,proto3" json:"rows_examined,omitempty"`
+	// Rows sent by the query.
+	RowsSent      int64 `protobuf:"varint,11,opt,name=rows_sent,json=rowsSent,proto3" json:"rows_sent,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -419,6 +423,20 @@ func (x *QueryDataItem) GetTimestamp() *timestamppb.Timestamp {
 		return x.Timestamp
 	}
 	return nil
+}
+
+func (x *QueryDataItem) GetRowsExamined() int64 {
+	if x != nil {
+		return x.RowsExamined
+	}
+	return 0
+}
+
+func (x *QueryDataItem) GetRowsSent() int64 {
+	if x != nil {
+		return x.RowsSent
+	}
+	return 0
 }
 
 // GetRealtimeQueryDataRequest contains filters for fetching real-time query data.
@@ -536,7 +554,7 @@ const file_realtimeanalytics_v1_realtimeanalytics_proto_rawDesc = "" +
 	"\x06enable\x18\x01 \x01(\bR\x06enable\x12&\n" +
 	"\n" +
 	"service_id\x18\x02 \x01(\tB\a\xfaB\x04r\x02\x10\x01R\tserviceId\"!\n" +
-	"\x1fChangeRealtimeAnalyticsResponse\"\xb2\x02\n" +
+	"\x1fChangeRealtimeAnalyticsResponse\"\xf4\x02\n" +
 	"\rQueryDataItem\x12\x19\n" +
 	"\bquery_id\x18\x01 \x01(\tR\aqueryId\x12\x1d\n" +
 	"\n" +
@@ -547,7 +565,10 @@ const file_realtimeanalytics_v1_realtimeanalytics_proto_rawDesc = "" +
 	"\x05query\x18\x06 \x01(\tR\x05query\x12 \n" +
 	"\vfingerprint\x18\a \x01(\tR\vfingerprint\x12\x1a\n" +
 	"\bduration\x18\b \x01(\x01R\bduration\x128\n" +
-	"\ttimestamp\x18\t \x01(\v2\x1a.google.protobuf.TimestampR\ttimestamp\"H\n" +
+	"\ttimestamp\x18\t \x01(\v2\x1a.google.protobuf.TimestampR\ttimestamp\x12#\n" +
+	"\rrows_examined\x18\n" +
+	" \x01(\x03R\frowsExamined\x12\x1b\n" +
+	"\trows_sent\x18\v \x01(\x03R\browsSent\"H\n" +
 	"\x1bGetRealtimeQueryDataRequest\x12)\n" +
 	"\vservice_ids\x18\x01 \x03(\tB\b\xfaB\x05\x92\x01\x02\b\x01R\n" +
 	"serviceIds\"]\n" +
